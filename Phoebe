@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Be My Valentine?</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 420px;
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 { font-size: 1.9rem; margin-bottom: 10px; }
+    p { color: #555; }
+
+    .buttons {
+      position: relative;
+      height: 160px;
+      margin-top: 15px;
+      overflow: hidden;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      position: absolute;
+      transition: all 0.25s ease;
+    }
+
+    #yesBtn {
+      background: #ff4d6d;
+      color: white;
+      left: 20%;
+      top: 40px;
+    }
+
+    #noBtn {
+      background: #ccc;
+      left: 60%;
+      top: 40px;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 22px;
+      color: #ff4d6d;
+      font-weight: bold;
+    }
+
+    /* floating hearts */
+    .heart {
+      position: absolute;
+      color: #ff4d6d;
+      font-size: 20px;
+      animation: floatUp 4s linear infinite;
+      opacity: 0.8;
+      z-index: 1;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(100vh); opacity: 1; }
+      to { transform: translateY(-10vh); opacity: 0; }
+    }
+
+    /* success screen */
+    .success {
+      position: fixed;
+      inset: 0;
+      background: #ff4d6d;
+      color: white;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-size: 2rem;
+      text-align: center;
+      z-index: 5;
+    }
+
+    .cat {
+      margin-top: 20px;
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- music -->
+  <audio autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a3c8b7c1f.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="container">
+    <h1>Will you be my Valentine, Phoebe? ❤️</h1>
+    <p>Choose wisely 😌</p>
+
+    <div class="buttons" id="buttonArea">
+      <button id="yesBtn">Yes 💘</button>
+      <button id="noBtn">No 🙃</button>
+    </div>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <div class="success" id="successScreen">
+    <div>💖 SHE SAID YES 💖</div>
+    <div style="font-size:1.2rem;margin-top:10px;">Mission successful.</div>
+
+    <!-- dancing cat -->
+    <img class="cat" src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="Dancing cat">
+  </div>
+
+  <!-- confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const buttonArea = document.getElementById("buttonArea");
+    const message = document.getElementById("message");
+    const successScreen = document.getElementById("successScreen");
+
+    let yesSize = 1;
+
+    // floating hearts
+    setInterval(() => {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.textContent = "❤️";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.fontSize = (Math.random() * 20 + 15) + "px";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 4000);
+    }, 400);
+
+    // keep NO button inside the visible button area
+    function moveNoButton() {
+      const areaRect = buttonArea.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const maxX = areaRect.width - btnRect.width;
+      const maxY = areaRect.height - btnRect.height;
+
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }
+
+    noBtn.addEventListener("mouseover", moveNoButton);
+    noBtn.addEventListener("touchstart", moveNoButton);
+
+    // each attempt makes YES bigger
+    noBtn.addEventListener("click", () => {
+      yesSize += 0.4;
+      yesBtn.style.transform = `scale(${yesSize})`;
+      yesBtn.style.fontSize = `${18 * yesSize}px`;
+      yesBtn.style.padding = `${12 * yesSize}px ${24 * yesSize}px`;
+      moveNoButton();
+    });
+
+    // YES pressed
+    yesBtn.addEventListener("click", () => {
+      message.textContent = "Phoebe said YES 💖";
+
+      confetti({ particleCount: 250, spread: 120 });
+
+      setTimeout(() => {
+        successScreen.style.display = "flex";
+      }, 900);
+    });
+  </script>
+
+</body>
+</html>
